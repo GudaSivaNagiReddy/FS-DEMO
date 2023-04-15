@@ -2,9 +2,12 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 const mongoose = require("mongoose")
-const passportConfig =require("./config/passport")
+const passport=require('./config/passport');
+const session = require('express-session')
  
 dotenv.config();
+
+const userRoutes = require('./routes/users')
  
 app.use(express.json({limit: '20mb'}))
 app.use(express.urlencoded({ extended: false, limit: '20mb' }))
@@ -19,15 +22,16 @@ app.use(
 );
    
   // Passport middleware
-  app.use(passportConfig.initialize());
-  app.use(passportConfig.session());
+//   app.use(passport.initialize());
+//   app.use(passport.session());
  
 // app.use("/",require("./routes"))
+app.use('/user', userRoutes);
 
 
 /* Connected the app with mongoose */
 mongoose.connect(
-    "mongodb://127.0.0.1:27017",
+    "mongodb://127.0.0.1:27017/fileUpload",
     { useNewUrlParser: true, useUnifiedTopology: true },
     (client, err) =>{
         try{

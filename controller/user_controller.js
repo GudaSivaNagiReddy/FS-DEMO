@@ -6,21 +6,21 @@ const passport = require('passport');
 const User = require('../models/User');
 const { forwardAuthenticated } = require('../config/auth');
 
-exports.register = (req, res) => {
+exports.register = (req, res, next) => {
 	console.log("Request: " + JSON.stringify(req.body))
 	const { name, email, password, password2 } = req.body;
 	let errors = [];
 
 	/* If condition to check whether all credentials are filled */
-	if (!name || !email || !password || !password2) {
+	if (!name || !email || !password) {
 	errors.push({ msg: 'Please enter all fields' });
 	}
 	
 	/* If condition to check whether password
 	and password2 matches or not */
-	if (password != password2) {
-	errors.push({ msg: 'Passwords do not match' });
-	}
+	// if (password != password2) {
+	// errors.push({ msg: 'Passwords do not match' });
+	// }
 
 	/* If condition to check in case password
 	length is greater than 3 or not */
@@ -55,6 +55,7 @@ exports.register = (req, res) => {
 			newUser
 				.save()
 				.then(user => {
+					
 				res.send("Register Successful");
 				})
 				.catch(err => console.log(err));
