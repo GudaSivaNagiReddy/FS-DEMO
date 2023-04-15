@@ -1,0 +1,35 @@
+{
+  "name": "fs-demo",
+  "version": "1.0.0",
+  "description": "demo project (file_sharing)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GudaSivaNagiReddy/FS-DEMO.git"
+  },
+  "author": "guda siva nagi reddy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GudaSivaNagiReddy/FS-DEMO/issues"
+  },
+  "homepage": "https://github.com/GudaSivaNagiReddy/FS-DEMO#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "csvtojson": "^2.0.10",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "fast-csv": "^4.3.6",
+    "mongoose": "^4.13.21",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
