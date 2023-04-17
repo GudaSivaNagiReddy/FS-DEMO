@@ -1,5 +1,17 @@
+const File = require('../models/fileModel');
+
 const path = require('path')
 const multer = require('multer')
+
+exports.uploadFile = async (req, res, next) => {
+  const file = new File({
+        name: req.file.originalname,
+        contentType: req.file.mimetype,
+        data: req.file.buffer
+      });
+      await file.save();
+      res.send('File uploaded!');
+}
 
 var storage = multer.diskStorage({
 	destination: function(req, file, cb){
@@ -11,11 +23,11 @@ var storage = multer.diskStorage({
 	}
 })
 
-var upload = multer({
+exports.uploadFilter = multer({
 	storage: storage,
 	fileFilter: function(req, file, callback){
 		if(
-			file.minetype == "text/csv"
+			file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg' || file.mimetype == 'image/png'
 		){
 			callback(null, true)
 		} else{
@@ -27,5 +39,3 @@ var upload = multer({
 		fileSize: 1024 * 1024 * 2
 	}
 })
-
-module.exports = upload

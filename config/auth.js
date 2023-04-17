@@ -11,6 +11,7 @@ module.exports = {
 
 	}
 	req.flash('error_msg', 'Please log in to view that resource');
+	res.redirect('/users/login');
 	},
 	forwardAuthenticated: function(req, res, next) {
 	if (!req.isAuthenticated()) {
@@ -19,5 +20,6 @@ module.exports = {
 	res.json({
         msg:"fail to authentication"
     })
+	res.redirect('/'); 
 	}
 };

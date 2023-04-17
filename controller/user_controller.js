@@ -8,19 +8,19 @@ const { forwardAuthenticated } = require('../config/auth');
 
 exports.register = (req, res, next) => {
 	console.log("Request: " + JSON.stringify(req.body))
-	const { name, email, password, password2 } = req.body;
+	const { name, email, password ,password2} = req.body;
 	let errors = [];
 
 	/* If condition to check whether all credentials are filled */
-	if (!name || !email || !password) {
+	if (!name || !email || !password || !password2) {
 	errors.push({ msg: 'Please enter all fields' });
 	}
 	
 	/* If condition to check whether password
 	and password2 matches or not */
-	// if (password != password2) {
-	// errors.push({ msg: 'Passwords do not match' });
-	// }
+	if (password != password2) {
+	errors.push({ msg: 'Passwords do not match' });
+	}
 
 	/* If condition to check in case password
 	length is greater than 3 or not */
@@ -38,9 +38,8 @@ exports.register = (req, res, next) => {
 		errors.push({ msg: 'Email already exists' });
 		res.send('register user exists');
 		}
-		
-	/* Creating the user */
-	else {
+		/* Creating the user */
+		else {
 		const newUser = new User({
 			name,
 			email,
@@ -67,7 +66,12 @@ exports.register = (req, res, next) => {
 }
 
 exports.login = (req, res, next) => {
-
+    const { email, password} = req.body;
+    if(email && password){
+       res.send("successfully login")
+    }else{
+        res.send("fail to login")
+    }
 	/* Authenticating if login was successful or
 	not with the help of passport */
 passport.authenticate('local', {

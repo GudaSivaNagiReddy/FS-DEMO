@@ -8,7 +8,8 @@ const session = require('express-session')
 dotenv.config();
 
 const userRoutes = require('./routes/users')
- 
+const fileRoutes = require('./routes/fileRoutes')
+
 app.use(express.json({limit: '20mb'}))
 app.use(express.urlencoded({ extended: false, limit: '20mb' }))
 
@@ -22,13 +23,12 @@ app.use(
 );
    
   // Passport middleware
-//   app.use(passport.initialize());
-//   app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
  
 // app.use("/",require("./routes"))
 app.use('/user', userRoutes);
-
-
+app.use('/file',fileRoutes)
 /* Connected the app with mongoose */
 mongoose.connect(
     "mongodb://127.0.0.1:27017/fileUpload",
