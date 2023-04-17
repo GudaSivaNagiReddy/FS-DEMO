@@ -65,14 +65,20 @@ exports.register = (req, res, next) => {
 	}
 }
 
-exports.login = (req, res, next) => {
-    const { email, password} = req.body;
-    if(email && password){
-       res.send("successfully login")
-    }else{
-        res.send("fail to login")
+exports.login = async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      // check user password with hashed password stored in the database
+      const validPassword = await bcrypt.compare(req.body.password, user.password);
+      if (validPassword) {
+        res.status(200).json({ message: "Valid password" });
+      } else {
+        res.status(400).json({ error: "Invalid Password" });
+      }
+    } else {
+      res.status(401).json({ error: "User does not exist" });
     }
-	/* Authenticating if login was successful or
+/* Authenticating if login was successful or
 	not with the help of passport */
 passport.authenticate('local', {
 	successRedirect: res.send("Login Successful"),
