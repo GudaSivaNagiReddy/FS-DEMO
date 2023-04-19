@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 // Load User model
 const User = require('../models/User');
-const { forwardAuthenticated } = require('../config/auth');
 const session = require('express-session')
 const nodemailer =require("nodemailer")
 
@@ -78,13 +77,16 @@ exports.register = (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
-	console.log(user)
+	console.log(user);
+	// console.log(user)
     if (user) {
       // check user password with hashed password stored in the database
       const validPassword = await bcrypt.compare(req.body.password, user.password);
 	//   console.log(validPassword);
       if (validPassword) {
-        req.session.user  = user
+        // req.session.isLogin  = true;
+		req.session.user = user
+		// console.log(req.session);
         res.status(200).json({ message: "Successfully login" });
       } else {
         res.status(400).json({ error: "Your password is not correct" });
@@ -92,4 +94,10 @@ exports.login = async (req, res, next) => {
     } else {
       res.status(401).json({ error: "User does not exist.Please register" });
     }
+}
+exports.logout= (req,res,next)=>{
+	req.session.destroy(err => {
+		res.json({msg: "Successfully logged out"})
+		console.log(err);
+	})
 }

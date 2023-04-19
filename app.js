@@ -9,34 +9,30 @@ dotenv.config();
 const userRoutes = require('./routes/users')
 const fileRoutes = require('./routes/fileRoutes')
 
-app.use(express.json({limit: '20mb'}))
-app.use(express.urlencoded({ extended: false, limit: '20mb' }))
+const User = require("./models/User")
 
-app.use('/user', userRoutes);
-app.use('/user-file',fileRoutes)
+app.use(express.json())
+app.use(express.urlencoded({ extended: false}))
 
 const store = new MongoDBStore({
     uri : "mongodb://127.0.0.1:27017/fileUpload",
     collection :"mySession"
 })
 
-// Express session
-app.use(
-    session({
-      secret: 'This is a secret',
-      resave: false,
-      saveUninitialized: true,
-      store:store,
-    })
-);
+app.use(session({secret: "secret", resave: false, saveUninitialized: false, store: store}));
+
+app.use('/user', userRoutes);
+app.use('/user-file',fileRoutes)
+
+
 
 app.use((req, res, next) => {
     if (!req.session.user) {
       return next();
     }
     User.findById(req.session.user._id)
-      .then((reqUser) => {
-        req.user = reqUser;
+      .then((user) => {
+        req.user = user;
         next();
       })
       .catch((err) => {
