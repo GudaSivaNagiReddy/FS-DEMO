@@ -1,5 +1,8 @@
-const File = require("../models/fileModel")
-
+const File = require("../models/fileModel");
+// const Grid = require("gridfs-stream");
+// const mongoose = require("mongoose");
+// mongoose.Promise = global.Promise;
+// Grid.mongo = mongoose.mongo;
 
 // exports.sizeFile = async (req, res) => {
 //   upload(req, res, function (err) {
@@ -9,65 +12,89 @@ const File = require("../models/fileModel")
 //       // An unknown error occurred when uploading.
 //       return res.status(501).json({ message: err.message });
 //     }
-//     // const fileInput = req.file.filename;
-//     // const file = new File({
-//       //   name: fileInput
-//       // })
-//       // await file.save()
 //       res.json({ msg: "Your file is successfully uploaded" })
-      
+
 //     })
-//     // const fileInput = req.file.filename;
-//     // const file = new File({
-//     //   name: fileInput
-//     // })
-//     // await file.save()
 //   }
-  
-  exports.createFile = async function(req, res){
-    /* Initializing the schema and putting in CRUDcreate */
-    const CRUDcreate = new File ({
-      myFile : req.file.filename,
-      userId : req.user._id
+
+exports.createFile = async function (req, res) {
+  /* Initializing the schema and putting in CRUDcreate */
+  const CRUDcreate = new File({
+    name: req.body.name,
+    myFile: req.file.filename,
+    userId: req.user._id,
+  });
+
+  /* Try Catch */
+  try {
+    /* Saving the data in mongoose */
+    const savedCRUD = await CRUDcreate.save();
+    /* Sending the response back */
+    res.status(200);
+    res.send(savedCRUD);
+  } catch (err) {
+    /* Sending the error back */
+    res.status(400).send(err);
+  }
+};
+
+exports.getFilesPublic = (req, res, next) => {
+  File.find({})
+    .then((files) => {
+      console.log("files Fetched");
+      // console.log(files);
+      res.status(200).json({ msg: "All Files are fetched", allFiles: files });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-    
-    /* Try Catch */
-    try{
-      /* Saving the data in mongoose */
-      const savedCRUD = await CRUDcreate.save();
-      /* Sending the response back */
-      res.status(200);
-      res.send(savedCRUD);
-    }catch(err){
-      /* Sending the error back */
-      res.status(400).send(err);
-    }
+};
+exports.getFilesPrivate = (req, res, next) => {
+  File.find({userId:req.user._id})
+    .then((files) => {
+      console.log("files Fetched");
+      // console.log(files);
+      res.status(200).json({ msg: "All Files are fetched", allFiles: files });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+exports.deleteFile = async function (req, res) {
+  let fileId = req.params.id;
+  try {
+    await File.findByIdAndRemove(fileId);
+    res.send("File Deleted");
+  } catch (err) {
+    res.status(400).send(err);
   }
-  
-  exports.deleteFile = async function(req, res){
-    /* Taking the id of the collection */
-    let id = req.body._id;
-    try{
-      /* Using findbyIdAndRemove operation to remove
-      the data with corresponding id */
-      const CRUDdel = await File.findByIdAndRemove(
-      id, function(err, res){
-        if (err){
-          /* Sending error back to the server */
-          res.status(400).send(err);
-          console.log(err)
-        }
-        else{
-          
-          /* Sending the response back to the server */
-          console.log("Removed User : ", res);
-        }
-      },
-      {
-        useFindAndModify: false
-      })
-    }catch(err){
-      res.status(400).send(err);
+};
+
+exports.downloadFile = async function (req, res) {
+  const conn = mongoose.connection;
+  const gfs = Grid(conn.db, mongoose.mongo);
+  //  let fileId = req.params.id;
+  gfs.fineOne({ _id: '644255c3dadf2c36fecc5bff', root: "myFiles" }, (err, file) => {
+    if (err) {
+      return res.status(400).send(err);
+    } else if (!file) {
+      return res
+        .status(404)
+        .send("Error on the database looking for the file.");
     }
-  }
-  
+    var readstream = gfs.createReadStream({
+      _id: _id,
+      root: "myFiles",
+    });
+    readstream.on("error", function (err) {
+      res.end();
+    });
+    readstream.pipe(res);
+  });
+};
+
+exports.deleteAllFiles = (req, res, next) => {
+  File.deleteMany().then((response) => {
+    res.send("Deleted all files");
+  });
+};
