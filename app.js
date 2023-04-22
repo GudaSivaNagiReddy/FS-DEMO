@@ -27,7 +27,6 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const filetypes = /jpeg|jpg|png|pdf/;
-
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
   const mimetype = filetypes.test(file.mimetype);
@@ -52,7 +51,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
-
+app.use(express.static(path.join(__dirname, 'public')))
 app.use(
   session({
     secret: "secret",
