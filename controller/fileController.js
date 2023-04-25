@@ -1,11 +1,7 @@
+const path = require("path");
 const File = require("../models/fileModel");
 var nodemailer = require("nodemailer");
-// const Grid = require("gridfs-stream");
-// const mongoose = require("mongoose");
-// mongoose.Promise = global.Promise;
-// Grid.mongo = mongoose.mongo;
-const path = require("path");
-const asyncWrapper = require("../middleware/asyncWrapper");
+// const asyncWrapper = require("../middleware/asyncWrapper");
 
 // exports.sizeFile = async (req, res) => {
 //   upload(req, res, function (err) {
@@ -24,8 +20,8 @@ exports.createFile = async function (req, res) {
   /* Initializing the schema and putting in CRUDcreate */
   const email = req.user._doc.email;
   const CRUDcreate = new File({
-    name: req.body.name,
-    myFile: req.file.filename,
+    fileName: req.body.fileName,
+    filePath: req.file.filename,
     userId: req.user._id,
   });
 
@@ -47,7 +43,6 @@ exports.createFile = async function (req, res) {
       subject: "Created for file",
       text: `your file ${req.body.name} is uploaded`,
     };
-    console.log(email);
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -57,7 +52,7 @@ exports.createFile = async function (req, res) {
       }
     });
     res.status(200);
-    res.send("File created");
+    res.status(200).json({msg : "Your file is uploaded"});
   } catch (err) {
     /* Sending the error back */
     res.status(400).send(err);
@@ -112,16 +107,20 @@ exports.deleteFile = async function (req, res, next) {
     });
 };
 
-exports.downloadFile = asyncWrapper(async (req, res, next) => {
-  const id  = req.params.id;
-  const item = await File.findById(id);
-  if (!item) {
-    return next(new Error("No item found"));
-  }
-  const file = File.file;
-  const filePath = path.join(__dirname, "../public/file");
-  res.download(filePath);
-});
+// exports.downloadFile = asyncWrapper(async (req, res, next) => {
+//     const id = req.params.id;
+// const item = await File.findById(id);
+// console.log(id)
+//   if (!item) {
+//     return next(new Error("No item found"));
+//   }
+//   const file = item.file;
+//   console.log(file)
+//   const filePath = path.join(__dirname,"../public/files");
+  
+//   console.log(filePath);
+//   res.download(filePath);
+// });
 
 exports.deleteAllFiles = (req, res, next) => {
   File.deleteMany().then((response) => {

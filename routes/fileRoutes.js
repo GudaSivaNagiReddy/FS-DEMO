@@ -7,7 +7,7 @@ router.get("/getPrivate",fileController.getFilesPrivate);
 
 router.delete("/deleteFile/:id",fileController.deleteFile);
 router.post('/delete-all', fileController.deleteAllFiles);
-router.post('/download-file/:id', fileController.downloadFile)
+// router.post('/download-file/:id', fileController.downloadFile)
 
 
 module.exports = router;

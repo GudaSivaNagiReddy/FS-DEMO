@@ -1,10 +1,5 @@
-const express = require("express");
-const router = express.Router();
 const bcrypt = require("bcryptjs");
-const passport = require("passport");
-// Load User model
 const User = require("../models/User");
-const session = require("express-session");
 const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
 
@@ -38,7 +33,6 @@ exports.register = (req, res, next) => {
         email,
         password,
       });
-
       // Bcrypt hashing the password for user privacy
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
