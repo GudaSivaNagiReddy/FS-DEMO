@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-/* Exporting schema with collection as CrudOperations */
+/* Exporting schema with collection*/
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

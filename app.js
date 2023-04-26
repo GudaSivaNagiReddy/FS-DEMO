@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
-const path = require("path");
 const bodyparser = require("body-parser");
 
 const userRoutes = require("./routes/users");
@@ -22,7 +21,7 @@ app.use(userSession.sessionId);
 
 app.use("/user", userRoutes);
 app.use("/userFile", fileRoutes);
-app.use("/userFile/upload", multer, fileController.createFile);
+app.use("/userFile/upload", multer, fileController.uploadFile);
 
 /* Setting up server */
 const serverConnection = async () => {

@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const fileController = require("../controller/fileController")
+const auth=require("../middleware/auth")
 
-router.get("/getPublic",fileController.getFilesPublic);
-router.get("/getPrivate",fileController.getFilesPrivate);
+router.get("/getPublic",auth,fileController.getFilesPublic);
+router.get("/getPrivate",auth,fileController.getFilesPrivate);
 
-router.delete("/deleteFile/:id",fileController.deleteFile);
-router.post('/delete-all', fileController.deleteAllFiles);
-// router.post('/download-file/:id', fileController.downloadFile)
+router.delete("/deleteFile/:id",auth,fileController.deleteFile);
+router.delete('/delete-all', auth,fileController.deleteAllFiles);
+// router.post('/download-file/:id', auth,fileController.download)
 
 
 module.exports = router;

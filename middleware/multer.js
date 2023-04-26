@@ -23,10 +23,11 @@ const storage = multer.diskStorage({
       cb(new Error("File Should be a jpeg|jpg|png|pdf"));
     }
   };
+  
   upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: { fileSize: 1024 * 1024 * 2 },
-  }).single("myFile");
+  }).single("filePath");
   
   module.exports = upload

@@ -1,65 +1,38 @@
 const path = require("path");
 const File = require("../models/fileModel");
-var nodemailer = require("nodemailer");
-// const asyncWrapper = require("../middleware/asyncWrapper");
+const nodemailer = require("nodemailer");
+const Grid = require('gridfs-stream');
+const mongoose = require('mongoose');
 
-// exports.sizeFile = async (req, res) => {
-//   upload(req, res, function (err) {
-//     if (err instanceof multer.MulterError) {
-//       return res.status(501).json({ multer: err.message + " .Your file is above 2MB.So upload file within 2MB" });
-//     } else if (err) {
-//       // An unknown error occurred when uploading.
-//       return res.status(501).json({ message: err.message });
-//     }
-//       res.json({ msg: "Your file is successfully uploaded" })
+// Create GridFS stream
+let gfs;
+const conn = mongoose.connection;
+conn.once('open', () => {
+  gfs = Grid(conn.db, mongoose.mongo);
+});
 
-//     })
-//   }
-
-exports.createFile = async function (req, res) {
-  /* Initializing the schema and putting in CRUDcreate */
-  const email = req.user._doc.email;
-  const CRUDcreate = new File({
+exports.uploadFile = async function (req, res) {
+  /* Initializing the schema and putting in fileCreate */
+  // const email = req.user._doc.email;
+  const fileCreate = new File({
     fileName: req.body.fileName,
-    filePath: req.file.filename,
+    filePath: req.file.path,
+    permission:req.body.permission,
     userId: req.user._id,
   });
-
   /* Try Catch */
   try {
-    /* Saving the data in mongoose */
-    const savedCRUD = await CRUDcreate.save();
-    /* Sending the response back */
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "mailto:gudasiva.reddy@brainvire.com",
-        pass: "Sivanagi9182@",
-      },
-    });
-    var mailOptions = {
-      from: "mailto:gudasiva.reddy@brainvire.com",
-      to: email,
-      subject: "Created for file",
-      text: `your file ${req.body.name} is uploaded`,
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-    res.status(200);
-    res.status(200).json({msg : "Your file is uploaded"});
+    const savedFile = await fileCreate.save(); 
+    // console.log(req.file)
+    res.json({msg : "uploaded file", savedFile : savedFile})
   } catch (err) {
     /* Sending the error back */
     res.status(400).send(err);
   }
 };
 
-exports.getFilesPublic = (req, res, next) => {
+exports.getFilesPublic = (req, res) => {
+  console.log(req.user)
   File.find()
     .then((files) => {
       console.log("files Fetched");
@@ -71,7 +44,7 @@ exports.getFilesPublic = (req, res, next) => {
     });
 };
 exports.getFilesPrivate = (req, res, next) => {
-  File.find({ userId: req.user._id })
+  File.find({ userId: req.user._id})
     .then((files) => {
       console.log("files Fetched");
       // console.log(files);
@@ -81,6 +54,9 @@ exports.getFilesPrivate = (req, res, next) => {
       console.log(err);
     });
 };
+
+
+
 exports.deleteFile = async function (req, res, next) {
   const fileId = req.params.id;
   File.find({ _id: fileId })
@@ -106,24 +82,8 @@ exports.deleteFile = async function (req, res, next) {
       console.log(err);
     });
 };
-
-// exports.downloadFile = asyncWrapper(async (req, res, next) => {
-//     const id = req.params.id;
-// const item = await File.findById(id);
-// console.log(id)
-//   if (!item) {
-//     return next(new Error("No item found"));
-//   }
-//   const file = item.file;
-//   console.log(file)
-//   const filePath = path.join(__dirname,"../public/files");
-  
-//   console.log(filePath);
-//   res.download(filePath);
-// });
-
 exports.deleteAllFiles = (req, res, next) => {
   File.deleteMany().then((response) => {
-    res.send("Deleted all files");
+    res.status(200).json({msg : "Deleted all files"});
   });
 };

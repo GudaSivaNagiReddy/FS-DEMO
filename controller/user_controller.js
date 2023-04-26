@@ -1,15 +1,16 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
 
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "mailto:gudasiva.reddy@brainvire.com",
-    pass: "Sivanagi9182@",
-  },
-});
+// var transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "mailto:gudasiva.reddy@brainvire.com",
+//     pass: "Sivanagi9182@",
+//   },
+// });
 
 exports.register = (req, res, next) => {
   console.log("Request: " + JSON.stringify(req.body));
@@ -67,20 +68,17 @@ exports.register = (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
-  console.log(user);
-  // console.log(user)
   if (user) {
     // check user password with hashed password stored in the database
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
+    const validPassword = await bcrypt.compare(req.body.password,user.password);
     //   console.log(validPassword);
     if (validPassword) {
       // req.session.isLogin  = true;
       req.session.user = user;
+      const token = jwt.sign({ user }, "secretkey", { expiresIn: "1h" });
+
       // console.log(req.session);
-      res.status(200).json({ message: "Successfully login" });
+      res.status(200).json({ message: "Successfully login", token: token });
     } else {
       res.status(400).json({ error: "Your password is not correct" });
     }
