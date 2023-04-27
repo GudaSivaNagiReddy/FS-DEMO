@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const bodyparser = require("body-parser");
 
+// importing a router files
 const userRoutes = require("./routes/users");
 const fileRoutes = require("./routes/fileRoutes");
 const fileController = require("./controller/fileController");
@@ -23,7 +24,7 @@ app.use("/user", userRoutes);
 app.use("/userFile", fileRoutes);
 app.use("/userFile/upload", multer, fileController.uploadFile);
 
-/* Setting up server */
+//  Setting up server 
 const serverConnection = async () => {
   try {
     await connect();

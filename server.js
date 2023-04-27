@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-/* Connected the app with mongoose */
+// Connected the app with mongoose 
 const connect = () => {
   mongoose.connect(
     "mongodb://127.0.0.1:27017/fileUpload",
