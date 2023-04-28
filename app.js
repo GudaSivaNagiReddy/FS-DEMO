@@ -11,14 +11,11 @@ const fileController = require("./controller/fileController");
 
 const connect = require("./server");
 const multer = require("./middleware/multer");
-const userSession = require("./util/userSession");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(express.static("./public"));
-app.use(userSession.storeSession);
-app.use(userSession.sessionId);
 
 app.use("/user", userRoutes);
 app.use("/userFile", fileRoutes);

@@ -3,7 +3,7 @@ const User = require("../models/User");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const sendEmail = require("../util/mailVerify");
+const sendEmail = require("../util/email");
 
 exports.register = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -23,13 +23,11 @@ exports.register = (req, res, next) => {
     // Creating the user
     else {
       const token = crypto.randomBytes(32).toString("hex");
-      const tokenExpire = Date.now() + 360000000;
       const newUser = new User({
         name,
         email,
         password,
         token,
-        tokenExpire,
       });
       // Bcrypt hashing the password for user privacy
       bcrypt.genSalt(10, (err, salt) => {
@@ -57,7 +55,6 @@ exports.emailVerification = (req, res, next) => {
   User.findOne({
     _id: userId,
     token: token,
-    tokenExpire: { $gt: Date.now() },
   })
     .then((user) => {
       user.isVerified = true;
@@ -84,7 +81,6 @@ exports.login = async (req, res, next) => {
     //   console.log(validPassword);
     if (validPassword) {
       // req.session.isLogin  = true;
-      req.session.user = user;
       const token = jwt.sign({ user }, "secretkey", { expiresIn: "1h" });
 
       // console.log(req.session);

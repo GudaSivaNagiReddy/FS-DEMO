@@ -7,16 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GudaSivaNagiReddy/FS-DEMO.git"
-  },
   "author": "guda siva nagi reddy",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/GudaSivaNagiReddy/FS-DEMO/issues"
-  },
-  "homepage": "https://github.com/GudaSivaNagiReddy/FS-DEMO#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
