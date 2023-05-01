@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-// Connected the app with mongoose 
+// Connected the app with mongoose
 const connect = () => {
   mongoose.connect(
     "mongodb://127.0.0.1:27017/fileUpload",
-    { useMongoClient : true },
+    { useMongoClient: true },
     (client, err) => {
       try {
         console.log("DB is Connected");

@@ -1,9 +1,10 @@
 const crypto = require("crypto");
-const User = require("../models/User");
+const User = require("../models/userModel");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const sendEmail = require("../util/email");
+const ErrorHandler = require("../util/errorHandler");
 
 exports.register = (req, res, next) => {
   const { name, email, password } = req.body;
@@ -14,11 +15,8 @@ exports.register = (req, res, next) => {
   }
 
   User.findOne({ email: email }).then((user) => {
-    // console.log(user);
     if (user) {
-      res.json({
-        msg: "This email is already exist.Please Login using this email",
-      });
+      return next(new ErrorHandler("This email is already exist.Please Login using this email",401))
     }
     // Creating the user
     else {
@@ -68,9 +66,13 @@ exports.emailVerification = (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.json({ msg: errors.array()[0].msg });
+  }
   const user = await User.findOne({ email: req.body.email });
   if (user) {
-    // check user password with hashed password stored in the database
     if (!user.isVerified) {
       return res.send("Email is Not Verified");
     }
@@ -78,23 +80,18 @@ exports.login = async (req, res, next) => {
       req.body.password,
       user.password
     );
-    //   console.log(validPassword);
     if (validPassword) {
-      // req.session.isLogin  = true;
       const token = jwt.sign({ user }, "secretkey", { expiresIn: "1h" });
-
-      // console.log(req.session);
-      res.status(200).json({ message: "Successfully login", token: token });
+      res.json({ message: "Successfully login", token: token });
     } else {
-      res.status(400).json({ error: "Your password is not correct" });
+      return next(new ErrorHandler("Your password is not correct",401));
     }
   } else {
-    res.status(401).json({ error: "User does not exist.Please register" });
+    return next(new ErrorHandler("User does not exist.Please register",401));
   }
 };
 exports.logout = (req, res, next) => {
   req.session.destroy((err) => {
     res.json({ msg: "Successfully logged out" });
-    console.log(err);
   });
 };

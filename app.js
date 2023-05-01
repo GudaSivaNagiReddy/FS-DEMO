@@ -5,12 +5,13 @@ dotenv.config();
 const bodyparser = require("body-parser");
 
 // importing a router files
+const ErrorMiddleware = require("./middleware/errors")
 const userRoutes = require("./routes/userRouters");
 const fileRoutes = require("./routes/fileRoutes");
 const fileController = require("./controller/fileController");
 
 const connect = require("./config/dbConnection");
-const auth=require("./middleware/auth")
+const authentication=require("./middleware/authentication")
 const multer = require("./middleware/multer");
 
 app.use(express.urlencoded({ extended: false }));
@@ -20,8 +21,11 @@ app.use(express.static("./public"));
 
 app.use("/user", userRoutes);
 app.use("/userFile", fileRoutes);
-app.use("/userFile/upload", auth,multer, fileController.uploadFile);
+app.use("/userFile/upload", authentication,multer, fileController.uploadFile);
 
+
+//handling the errors
+app.use(ErrorMiddleware)
 //  Setting up server 
 const serverConnection = async () => {
   try {
